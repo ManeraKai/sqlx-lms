@@ -1,0 +1,15 @@
+database must consist of atleast 3 table with your own choice of schema relations and all
+
+in the gui there should be a text box to enter a query and under it a display of the output
+
+a combo box where you choose one of the table and it will display the table row by row indivisually as a text boxes
+
+there should be buttons to surf between rows
+
+some parts of the rows should be constant while others editable and it should only update the table when an "Update" or "Confirm" button is pressed
+
+delete button to delete data needed
+
+insert button to add data to the table
+
+should show error message when error is made by the user
