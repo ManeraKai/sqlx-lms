@@ -2,63 +2,69 @@
   import "./app.css";
   import BookTable from "$lib/components/BookTable.svelte";
   import TableSelect from "$lib/components/TableSelect.svelte";
-
-  type Book = {
-    id: Number;
-    name: String;
-  };
-
-  type NewBook = {
-    name: String | null;
-  };
+  import CustomerTable from "$lib/components/CustomerTable.svelte";
+  import type {
+    Book,
+    NewBook,
+    Customer,
+    NewCustomer,
+    NewBorrow,
+    Borrow,
+  } from "$lib/types";
+  import BorrowTable from "$lib/components/BorrowTable.svelte";
 
   const tables = [
-    {
-      value: "book",
-      label: "Books",
-    },
-    {
-      value: "customer",
-      label: "Customers",
-    },
-    {
-      value: "borrow",
-      label: "Borrows",
-    },
+    { value: "book", label: "Books" },
+    { value: "customer", label: "Customers" },
+    { value: "borrow", label: "Borrows" },
   ];
 
-  let open = $state(false);
   let table_name = $state(tables[0].value);
-  let triggerRef = $state<HTMLButtonElement>(null!);
+
   let books: Book[] | null = $state(null);
-  let newBook: NewBook | null = $state(null);
-
-  const selectedValue = $derived(
-    tables.find((f) => f.value === table_name)?.label
-  );
-
   async function get_books() {
     const response = await fetch(`/api/book`);
-    const records = await response.json();
-    books = records;
+    books = await response.json();
+  }
+
+  let customers: Customer[] | null = $state(null);
+
+  async function get_customers() {
+    const response = await fetch(`/api/customer`);
+    customers = await response.json();
+  }
+
+  let borrows: Borrow[] | null = $state(null);
+  async function get_borrows() {
+    const response = await fetch(`/api/borrow`);
+    borrows = await response.json();
+  }
+
+  async function get_all() {
+    await get_books();
+    await get_borrows();
+    await get_customers();
   }
 </script>
 
 <main>
   <h1 class="text-center m-10">Library Management System</h1>
   <br />
-  <div class="m-auto w-[500px]">
-    <br /><br />
-    <TableSelect
-      bind:open
-      {selectedValue}
-      bind:table_name
-      {tables}
-      bind:triggerRef
-    />
+  <div class="m-auto w-[800px]">
+    <div>
+      <TableSelect bind:table_name {tables} />
+    </div>
     {#if table_name == "book"}
       {#await get_books() then}
-        <BookTable {books} {newBook} {get_books} />
+        <BookTable {books} {get_books} />
+      {/await}
+    {:else if table_name == "customer"}
+      {#await get_customers() then}
+        <CustomerTable {customers} {get_customers} />
+      {/await}
+    {:else if table_name == "borrow"}
+      {#await get_all() then}
+        <BorrowTable {borrows} {get_borrows} {books} {customers} />
       {/await}
     {/if}
   </div>

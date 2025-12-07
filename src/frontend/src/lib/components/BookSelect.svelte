@@ -2,26 +2,23 @@
   import Button from "$lib/components/ui/button/button.svelte";
   import * as Command from "$lib/components/ui/command/index.js";
   import * as Popover from "$lib/components/ui/popover/index.js";
+  import type { Book } from "$lib/types";
   import { cn } from "$lib/utils.js";
   import CheckIcon from "@lucide/svelte/icons/check";
   import ChevronsUpDownIcon from "@lucide/svelte/icons/chevrons-up-down";
 
-  
   let open = $state(false);
 
   let {
-    table_name = $bindable(),
-    tables,
+    book_id = $bindable(),
+    books,
   }: {
-    table_name: String;
-    tables: {
-      value: string;
-      label: string;
-    }[];
+    book_id: String | null;
+    books: Book[] | null;
   } = $props();
 
   const selectedValue = $derived(
-    tables.find((f) => f.value === table_name)?.label
+    books && books.find((f) => f.id.toString() === book_id)?.name
   );
 </script>
 
@@ -35,7 +32,7 @@
         role="combobox"
         aria-expanded={open}
       >
-        {selectedValue || "Select a Table..."}
+        {selectedValue || "Select a Book..."}
         <ChevronsUpDownIcon class="ms-2 size-4 shrink-0 opacity-50" />
       </Button>
     {/snippet}
@@ -44,21 +41,21 @@
     <Command.Root>
       <Command.List>
         <Command.Group>
-          {#each tables as table}
+          {#each books as book}
             <Command.Item
-              value={table.value}
+              value={book.id.toString()}
               onSelect={() => {
-                table_name = table.value;
+                book_id = book.id.toString();
                 open = false;
               }}
             >
               <CheckIcon
                 class={cn(
                   "me-2 size-4",
-                  table_name !== table.value && "text-transparent"
+                  book_id !== book.id.toString() && "text-transparent"
                 )}
               />
-              {table.label}
+              {book.name}
             </Command.Item>
           {/each}
         </Command.Group>

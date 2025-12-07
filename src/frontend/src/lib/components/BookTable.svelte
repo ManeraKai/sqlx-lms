@@ -3,8 +3,16 @@
   import Button from "$lib/components/ui/button/button.svelte";
   import XIcon from "@lucide/svelte/icons/x";
   import { Input } from "$lib/components/ui/input/index.js";
+  import type { Book, NewBook } from "$lib/types";
 
-  let { newBook, books, get_books } = $props();
+  let newBook: NewBook | null = $state(null);
+  let {
+    books,
+    get_books,
+  }: {
+    books: Book[] | null;
+    get_books: () => Promise<void>;
+  } = $props();
 
   async function insertBook() {
     if (newBook === null) {
@@ -14,9 +22,7 @@
     const response = await fetch(`/api/book`, {
       method: "POST",
       body: JSON.stringify(newBook),
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
     });
     if (response.status === 200) {
       newBook = null;
@@ -34,7 +40,7 @@
   }
 </script>
 
-<Table.Root>
+<Table.Root class="w-[500px]">
   <Table.Header>
     <Table.Row>
       <Table.Head>ID</Table.Head>

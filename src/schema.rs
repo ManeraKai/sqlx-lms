@@ -13,7 +13,7 @@ pub struct Customer {
     pub id: i64,
     pub name: String,
     pub age: i64,
-    pub gender: i64,
+    pub sex: i64,
     pub crimes: i64,
 }
 
@@ -34,8 +34,8 @@ impl fmt::Display for Customer {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
-            "Customer(id: {}, name: {}, age: {}, gender: {}, crimes: {})",
-            self.id, self.name, self.age, self.gender, self.crimes
+            "Customer(id: {}, name: {}, age: {}, sex: {}, crimes: {})",
+            self.id, self.name, self.age, self.sex, self.crimes
         )
     }
 }
@@ -60,7 +60,7 @@ pub async fn init_db(pool: &mut Pool<Sqlite>) -> Result<(), sqlx::Error> {
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
                 age INTEGER NOT NULL,
-                gender INTEGER NOT NULL,
+                sex INTEGER NOT NULL,
                 crimes INTEGER NOT NULL DEFAULT 0 
             );
             CREATE TABLE IF NOT EXISTS borrow(

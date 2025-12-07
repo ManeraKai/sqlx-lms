@@ -2,26 +2,23 @@
   import Button from "$lib/components/ui/button/button.svelte";
   import * as Command from "$lib/components/ui/command/index.js";
   import * as Popover from "$lib/components/ui/popover/index.js";
+  import type { Book } from "$lib/types";
   import { cn } from "$lib/utils.js";
   import CheckIcon from "@lucide/svelte/icons/check";
   import ChevronsUpDownIcon from "@lucide/svelte/icons/chevrons-up-down";
 
-  
   let open = $state(false);
 
   let {
-    table_name = $bindable(),
-    tables,
+    customer_id = $bindable(),
+    customers,
   }: {
-    table_name: String;
-    tables: {
-      value: string;
-      label: string;
-    }[];
+    customer_id: String | null;
+    customers: Book[] | null;
   } = $props();
 
   const selectedValue = $derived(
-    tables.find((f) => f.value === table_name)?.label
+    customers && customers.find((f) => f.id.toString() === customer_id)?.name
   );
 </script>
 
@@ -35,7 +32,7 @@
         role="combobox"
         aria-expanded={open}
       >
-        {selectedValue || "Select a Table..."}
+        {selectedValue || "Select a Customer..."}
         <ChevronsUpDownIcon class="ms-2 size-4 shrink-0 opacity-50" />
       </Button>
     {/snippet}
@@ -44,21 +41,21 @@
     <Command.Root>
       <Command.List>
         <Command.Group>
-          {#each tables as table}
+          {#each customers as customer}
             <Command.Item
-              value={table.value}
+              value={customer.id.toString()}
               onSelect={() => {
-                table_name = table.value;
+                customer_id = customer.id.toString();
                 open = false;
               }}
             >
               <CheckIcon
                 class={cn(
                   "me-2 size-4",
-                  table_name !== table.value && "text-transparent"
+                  customer_id !== customer.id.toString() && "text-transparent"
                 )}
               />
-              {table.label}
+              {customer.name}
             </Command.Item>
           {/each}
         </Command.Group>
