@@ -1,6 +1,6 @@
 use core::fmt;
 
-use sqlx::{Pool, Sqlite, prelude::FromRow};
+use sqlx::{prelude::FromRow};
 
 #[derive(Debug, FromRow, serde::Serialize)]
 pub struct Book {
@@ -22,6 +22,14 @@ pub struct Borrow {
     pub id: i64,
     pub book_id: i64,
     pub customer_id: i64,
+    pub duration: i64,
+}
+
+#[derive(Debug, FromRow, serde::Serialize)]
+pub struct BorrowJoined {
+    pub id: i64,
+    pub book_name: String,
+    pub customer_name: String,
     pub duration: i64,
 }
 
@@ -48,33 +56,4 @@ impl fmt::Display for Borrow {
             self.id, self.book_id, self.customer_id, self.duration,
         )
     }
-}
-
-pub async fn init_db(pool: &mut Pool<Sqlite>) -> Result<(), sqlx::Error> {
-    sqlx::query(
-        "CREATE TABLE IF NOT EXISTS book(
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL
-            );
-            CREATE TABLE IF NOT EXISTS customer(
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL,
-                age INTEGER NOT NULL,
-                sex INTEGER NOT NULL,
-                crimes INTEGER NOT NULL DEFAULT 0 
-            );
-            CREATE TABLE IF NOT EXISTS borrow(
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                book_id INTEGER NOT NULL,
-                customer_id INTEGER NOT NULL,
-                duration INTEGER NOT NULL,
-                FOREIGN KEY(book_id) REFERENCES book(id),
-                FOREIGN KEY(customer_id) REFERENCES customer(id)
-            );
-            ",
-    )
-    .execute(&*pool)
-    .await?;
-    println!("Initialized database");
-    Ok(())
 }

@@ -2,16 +2,26 @@ use actix_web::{HttpRequest, HttpResponse, Responder, delete, get, http::StatusC
 use serde_json::json;
 use sqlx::{Pool, Sqlite};
 
-use crate::{routes::RemoveRecordPath, schema::Borrow};
+use crate::{routes::RemoveRecordPath, schema::BorrowJoined};
 
 #[get("/api/borrow")]
 async fn get(_req: HttpRequest) -> impl Responder {
     let app_data = _req.app_data::<Pool<Sqlite>>();
     if let Some(pool) = app_data {
-        let books = sqlx::query_as!(Borrow, "SELECT * FROM borrow")
-            .fetch_all(&*pool)
-            .await
-            .unwrap();
+        let books = sqlx::query_as!(
+            BorrowJoined,
+            "SELECT
+                borrow.id AS id,
+                book.name AS book_name,
+                customer.name AS customer_name,
+                borrow.duration AS duration
+            FROM borrow
+            INNER JOIN customer ON borrow.customer_id = customer.id
+            INNER JOIN book ON borrow.book_id = book.id",
+        )
+        .fetch_all(&*pool)
+        .await
+        .unwrap();
         return HttpResponse::Ok().body(json!(books).to_string());
     }
     return HttpResponse::Ok()
@@ -30,15 +40,19 @@ struct PostRecordBorrow {
 pub async fn insert(_req: HttpRequest, body: web::Json<PostRecordBorrow>) -> impl Responder {
     let app_data = _req.app_data::<Pool<Sqlite>>();
     if let Some(pool) = app_data {
-        sqlx::query!(
+        let response = sqlx::query!(
             "INSERT INTO borrow (book_id, customer_id, duration) VALUES (?, ?, ?)",
             body.book_id,
             body.customer_id,
             body.duration
         )
         .execute(&*pool)
-        .await
-        .unwrap();
+        .await;
+        if let Err(err) = response {
+            return HttpResponse::Ok()
+                .status(StatusCode::BAD_REQUEST)
+                .body(err.to_string());
+        }
         return HttpResponse::Ok().body("");
     }
     return HttpResponse::Ok()
@@ -54,6 +68,23 @@ pub async fn delete(_req: HttpRequest, path: web::Path<RemoveRecordPath>) -> imp
             .execute(&*pool)
             .await
             .unwrap();
+        return HttpResponse::Ok().body("");
+    }
+    return HttpResponse::Ok()
+        .status(StatusCode::INTERNAL_SERVER_ERROR)
+        .body("Error");
+}
+
+#[post("/api/borrow/advance_in_time")]
+pub async fn advance_in_time(_req: HttpRequest) -> impl Responder {
+    let app_data = _req.app_data::<Pool<Sqlite>>();
+    if let Some(pool) = app_data {
+        sqlx::query!(
+            "UPDATE borrow SET duration = CASE WHEN duration = 0 THEN 0 ELSE duration - 1 END"
+        )
+        .execute(&*pool)
+        .await
+        .unwrap();
         return HttpResponse::Ok().body("");
     }
     return HttpResponse::Ok()

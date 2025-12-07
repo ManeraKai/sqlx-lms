@@ -21,10 +21,10 @@ export type NewCustomer = {
   sex: String | null;
 };
 
-export type Borrow = {
+export type BorrowJoined = {
   id: Number;
-  book_id: Number;
-  customer_id: Number;
+  book_name: String;
+  customer_name: String;
   duration: Number;
 };
 

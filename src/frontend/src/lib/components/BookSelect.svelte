@@ -32,7 +32,7 @@
         role="combobox"
         aria-expanded={open}
       >
-        {selectedValue || "Select a Book..."}
+        {selectedValue || "Select Book..."}
         <ChevronsUpDownIcon class="ms-2 size-4 shrink-0 opacity-50" />
       </Button>
     {/snippet}

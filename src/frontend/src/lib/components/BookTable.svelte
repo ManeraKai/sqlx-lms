@@ -9,12 +9,15 @@
   let {
     books,
     get_books,
+    error = $bindable(),
   }: {
     books: Book[] | null;
     get_books: () => Promise<void>;
+    error: String | null;
   } = $props();
 
   async function insertBook() {
+    error = null;
     if (newBook === null) {
       newBook = { name: null };
       return;
@@ -27,16 +30,26 @@
     if (response.status === 200) {
       newBook = null;
       await get_books();
+    } else {
+      error = await response.text();
     }
   }
 
   async function deleteBook(id: Number) {
+    error = null;
     const response = await fetch(`/api/book/${id}`, {
       method: "DELETE",
     });
     if (response.status === 200) {
       await get_books();
+    } else {
+      error = await response.text();
     }
+  }
+
+    function discard() {
+    newBook = null;
+    error = null;
   }
 </script>
 
@@ -64,7 +77,7 @@
         <Table.Cell></Table.Cell>
         <Table.Cell><Input bind:value={newBook.name} /></Table.Cell>
         <Table.Cell>
-          <Button variant="ghost" onclick={() => (newBook = null)}
+          <Button variant="ghost" onclick={discard}
             ><XIcon />
           </Button>
         </Table.Cell>

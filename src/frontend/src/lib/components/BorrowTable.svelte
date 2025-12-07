@@ -3,7 +3,7 @@
   import Button from "$lib/components/ui/button/button.svelte";
   import XIcon from "@lucide/svelte/icons/x";
   import { Input } from "$lib/components/ui/input/index.js";
-  import type { Book, Borrow, Customer, NewBorrow } from "$lib/types";
+  import type { Book, BorrowJoined, Customer, NewBorrow } from "$lib/types";
   import BookSelect from "./BookSelect.svelte";
   import CustomerSelect from "./CustomerSelect.svelte";
 
@@ -14,14 +14,17 @@
     get_borrows,
     books,
     customers,
+    error = $bindable(),
   }: {
-    borrows: Borrow[] | null;
+    borrows: BorrowJoined[] | null;
     get_borrows: () => Promise<void>;
     books: Book[] | null;
     customers: Customer[] | null;
+    error: String | null;
   } = $props();
 
   async function insertBorrow() {
+    error = null;
     if (newBorrow === null) {
       newBorrow = { book_id: null, customer_id: null, duration: null };
       return;
@@ -33,17 +36,28 @@
     });
     if (response.status === 200) {
       newBorrow = null;
+
       await get_borrows();
+    } else {
+      error = await response.text();
     }
   }
 
   async function deleteBorrow(id: Number) {
+    error = null;
     const response = await fetch(`/api/borrow/${id}`, {
       method: "DELETE",
     });
     if (response.status === 200) {
       await get_borrows();
+    } else {
+      error = await response.text();
     }
+  }
+
+  function discard() {
+    newBorrow = null;
+    error = null;
   }
 </script>
 
@@ -51,8 +65,8 @@
   <Table.Header>
     <Table.Row>
       <Table.Head>ID</Table.Head>
-      <Table.Head>Book ID</Table.Head>
-      <Table.Head>Customer ID</Table.Head>
+      <Table.Head>Book</Table.Head>
+      <Table.Head>Customer</Table.Head>
       <Table.Head>Duration (days)</Table.Head>
     </Table.Row>
   </Table.Header>
@@ -60,8 +74,8 @@
     {#each borrows as borrow}
       <Table.Row>
         <Table.Cell>{borrow.id}</Table.Cell>
-        <Table.Cell>{borrow.book_id}</Table.Cell>
-        <Table.Cell>{borrow.customer_id}</Table.Cell>
+        <Table.Cell>{borrow.book_name}</Table.Cell>
+        <Table.Cell>{borrow.customer_name}</Table.Cell>
         <Table.Cell>{borrow.duration}</Table.Cell>
 
         <Table.Cell>
@@ -78,13 +92,16 @@
           <BookSelect {books} bind:book_id={newBorrow.book_id} />
         </Table.Cell>
         <Table.Cell>
-          <CustomerSelect {customers} bind:customer_id={newBorrow.customer_id} />
+          <CustomerSelect
+            {customers}
+            bind:customer_id={newBorrow.customer_id}
+          />
         </Table.Cell>
         <Table.Cell>
           <Input bind:value={newBorrow.duration} />
         </Table.Cell>
         <Table.Cell>
-          <Button variant="ghost" onclick={() => (newBorrow = null)}>
+          <Button variant="ghost" onclick={discard}>
             <XIcon />
           </Button>
         </Table.Cell>

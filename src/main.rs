@@ -7,13 +7,11 @@ use sqlx::sqlite::SqlitePoolOptions;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    let mut pool = SqlitePoolOptions::new()
+    let pool = SqlitePoolOptions::new()
         .max_connections(5)
         .connect("sqlite://data.db")
         .await
         .unwrap();
-
-    schema::init_db(&mut pool).await.unwrap();
 
     println!("http://127.0.0.1:8081");
 
@@ -29,6 +27,7 @@ async fn main() -> std::io::Result<()> {
             .service(routes::borrow::get)
             .service(routes::borrow::insert)
             .service(routes::borrow::delete)
+            .service(routes::borrow::advance_in_time)
     })
     .bind(("127.0.0.1", 8081))?
     .run()

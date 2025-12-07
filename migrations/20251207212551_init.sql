@@ -1,0 +1,20 @@
+-- Add migration script here
+CREATE TABLE IF NOT EXISTS book(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS customer(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    age INTEGER NOT NULL,
+    sex INTEGER NOT NULL,
+    crimes INTEGER NOT NULL DEFAULT 0 
+);
+CREATE TABLE IF NOT EXISTS borrow(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    book_id INTEGER NOT NULL UNIQUE,
+    customer_id INTEGER NOT NULL,
+    duration INTEGER NOT NULL,
+    FOREIGN KEY(book_id) REFERENCES book(id),
+    FOREIGN KEY(customer_id) REFERENCES customer(id)
+);

@@ -9,12 +9,15 @@
   let {
     customers,
     get_customers,
+    error = $bindable(),
   }: {
     customers: Customer[] | null;
     get_customers: () => Promise<void>;
+    error: String | null;
   } = $props();
 
   async function insertCustomer() {
+    error = null;
     if (newCustomer === null) {
       newCustomer = { name: null, age: null, sex: null };
       return;
@@ -27,16 +30,25 @@
     if (response.status === 200) {
       newCustomer = null;
       await get_customers();
+    } else {
+      error = await response.text();
     }
   }
 
   async function deleteCustomer(id: Number) {
+    error = null;
     const response = await fetch(`/api/customer/${id}`, {
       method: "DELETE",
     });
     if (response.status === 200) {
       await get_customers();
+    } else {
+      error = await response.text();
     }
+  }
+  function discard() {
+    newCustomer = null;
+    error = null;
   }
 </script>
 
@@ -79,7 +91,7 @@
         </Table.Cell>
         <Table.Cell></Table.Cell>
         <Table.Cell>
-          <Button variant="ghost" onclick={() => (newCustomer = null)}>
+          <Button variant="ghost" onclick={discard}>
             <XIcon />
           </Button>
         </Table.Cell>
