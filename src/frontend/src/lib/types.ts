@@ -1,5 +1,5 @@
 export type Book = {
-  id: Number;
+  id: number;
   name: String;
 };
 
@@ -8,7 +8,7 @@ export type NewBook = {
 };
 
 export type Customer = {
-  id: Number;
+  id: number;
   name: String;
   age: number;
   sex: number;
@@ -19,13 +19,23 @@ export type NewCustomer = {
   name: String | null;
   age: String | null;
   sex: String | null;
+  crimes: String | null;
 };
 
 export type BorrowJoined = {
-  id: Number;
+  id: number;
+  book_id: number;
   book_name: String;
+  customer_id: number;
   customer_name: String;
-  duration: Number;
+  duration: number;
+};
+
+export type Borrow = {
+  id: number;
+  book_id: String | null;
+  customer_id: String | null;
+  duration: String | null;
 };
 
 export type NewBorrow = {

@@ -1,6 +1,6 @@
 use core::fmt;
 
-use sqlx::{prelude::FromRow};
+use sqlx::prelude::FromRow;
 
 #[derive(Debug, FromRow, serde::Serialize)]
 pub struct Book {
@@ -18,7 +18,7 @@ pub struct Customer {
 }
 
 #[derive(Debug, FromRow, serde::Serialize)]
-pub struct Borrow {
+pub struct _Borrow {
     pub id: i64,
     pub book_id: i64,
     pub customer_id: i64,
@@ -28,7 +28,9 @@ pub struct Borrow {
 #[derive(Debug, FromRow, serde::Serialize)]
 pub struct BorrowJoined {
     pub id: i64,
+    pub book_id: i64,
     pub book_name: String,
+    pub customer_id: i64,
     pub customer_name: String,
     pub duration: i64,
 }
@@ -48,7 +50,7 @@ impl fmt::Display for Customer {
     }
 }
 
-impl fmt::Display for Borrow {
+impl fmt::Display for _Borrow {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
