@@ -33,7 +33,7 @@
     <Button
         class="mt-2 mx-2"
         onclick={nextRecord}
-        disabled={newRecord !== null || editedRecord !== null}
+        disabled={record == null || newRecord !== null || editedRecord !== null}
     >
         Next Record
     </Button>

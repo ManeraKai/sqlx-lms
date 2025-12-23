@@ -14,7 +14,6 @@ pub struct Customer {
     pub name: String,
     pub age: i64,
     pub sex: i64,
-    pub crimes: i64,
 }
 
 #[derive(Debug, FromRow, serde::Serialize)]
@@ -44,8 +43,8 @@ impl fmt::Display for Customer {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
-            "Customer(id: {}, name: {}, age: {}, sex: {}, crimes: {})",
-            self.id, self.name, self.age, self.sex, self.crimes
+            "Customer(id: {}, name: {}, age: {}, sex: {})",
+            self.id, self.name, self.age, self.sex
         )
     }
 }

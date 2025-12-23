@@ -12,14 +12,12 @@ export type Customer = {
   name: String;
   age: number;
   sex: number;
-  crimes: number;
 };
 
 export type NewCustomer = {
   name: String | null;
   age: String | null;
   sex: String | null;
-  crimes: String | null;
 };
 
 export type BorrowJoined = {

@@ -35,7 +35,7 @@
     async function insert() {
         error = null;
         if (newRecord === null) {
-            newRecord = { name: null, age: null, sex: null, crimes: "0" };
+            newRecord = { name: null, age: null, sex: null };
             return;
         }
         const response = await fetch(`/api/customer`, {
@@ -59,7 +59,6 @@
                 name: record.name,
                 age: record.age.toString(),
                 sex: record.sex.toString(),
-                crimes: record.crimes.toString(),
             };
             return;
         }
@@ -103,8 +102,13 @@
             <Table.Head>ID</Table.Head>
             <Table.Head>Name</Table.Head>
             <Table.Head>Age</Table.Head>
-            <Table.Head>Sex</Table.Head>
-            <Table.Head>Crimes</Table.Head>
+            <Table.Head>
+                Sex (<a
+                    href="https://en.wikipedia.org/wiki/ISO/IEC_5218"
+                    class="underline"
+                    >ISO/IEC 5218
+                </a>)
+            </Table.Head>
         </Table.Row>
     </Table.Header>
     <Table.Body>
@@ -114,7 +118,6 @@
                 <Table.Cell>{record.name}</Table.Cell>
                 <Table.Cell>{record.age}</Table.Cell>
                 <Table.Cell>{record.sex}</Table.Cell>
-                <Table.Cell>{record.crimes}</Table.Cell>
             </Table.Row>
         {:else if editedRecord && record}
             <Table.Row>
@@ -127,9 +130,6 @@
                 </Table.Cell>
                 <Table.Cell>
                     <Input bind:value={editedRecord.sex} />
-                </Table.Cell>
-                <Table.Cell>
-                    <Input bind:value={editedRecord.crimes} />
                 </Table.Cell>
                 <Table.Cell>
                     <Button variant="ghost" onclick={discard}>

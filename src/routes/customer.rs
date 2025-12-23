@@ -36,7 +36,6 @@ struct PostRecordCustomer {
     name: String,
     age: String,
     sex: String,
-    crimes: String,
 }
 
 #[post("/api/customer")]
@@ -44,11 +43,10 @@ pub async fn insert(_req: HttpRequest, body: web::Json<PostRecordCustomer>) -> i
     let app_data = _req.app_data::<Pool<Sqlite>>();
     if let Some(pool) = app_data {
         let response = sqlx::query!(
-            "INSERT INTO customer (name, age, sex, crimes) VALUES (?, ?, ?, ?)",
+            "INSERT INTO customer (name, age, sex) VALUES (?, ?, ?)",
             body.name,
             body.age,
             body.sex,
-            body.crimes,
         )
         .execute(&*pool)
         .await;
@@ -73,11 +71,10 @@ pub async fn edit(
     let app_data = _req.app_data::<Pool<Sqlite>>();
     if let Some(pool) = app_data {
         let response = sqlx::query!(
-            "UPDATE customer SET name = ?, age = ?, sex = ?, crimes = ? WHERE id = ?",
+            "UPDATE customer SET name = ?, age = ?, sex = ? WHERE id = ?",
             body.name,
             body.age,
             body.sex,
-            body.crimes,
             path.id
         )
         .execute(&*pool)
