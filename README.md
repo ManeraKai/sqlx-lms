@@ -1,5 +1,11 @@
 # Library Management System
 
+This repository is not very useful because, it's a university course project :)
+
+I wrote the backend in Rust because, I wanted to try [sqlx](https://github.com/launchbadge/sqlx).
+
+## Development
+
 Install [Node.js](https://nodejs.org), [Rust](https://www.rust-lang.org/)
 
 ### Initialize Database
